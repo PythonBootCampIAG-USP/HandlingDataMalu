@@ -11,12 +11,18 @@
     This program is an overall example of data analysis using Python.
 
 """
-# ======================================================================================================================
+# =====================================================================================================================
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-# ======================================================================================================================
+# =====================================================================================================================
+
+def flux(magnitude, wavelength):
+    flux = (2.997E18/(wavelength ** 2.)) * 10.**(-0.4 * (magnitude + 48.60)) # In erg s^-1 cm^-2 Angstrom^-1
+    return flux
+    
+# =====================================================================================================================
 
 # Main thread
 if __name__ == '__main__':
@@ -30,17 +36,24 @@ if __name__ == '__main__':
     mag_abs_r= mydata[:, 3].astype(float)
     redshift = mydata[:, 4].astype(float)
     
-    # Alternatively ---------------------------------------------------------------------------------------------------
+    ## ALTERNATIVELY --------------------------------------------------------------------------------------------------
     # mydata_path = '/home/fulano_de_tal/folder1/folder2/mydata.txt'
-    # mydata = np.loadtxt(mydata)
+    # objectid = np.loadtxt(mydata_path, usecols=[0], dtype=long)
+    # mag_ab_g = np.loadtxt(mydata_path, usecols=[1])
     
     # A few calculations -----------------------------------------------------------------------------------------------
     average_redshift = np.average(redshift)  # Calculates the average redshift of the sample
-    print average_redshift  # Printing the results
+    print average_redshift                   # Printing the results
     
+    mag_abs_r_std = np.std(mag_abs_r)        # Calculates the standard deviation of absolute magnitude
+    print '%.4f' % mag_abs_r_std             # Prints it with 4 decimal characters
     
-    
-    # Plots ------------------------------------------------------------------------------------------------------------
+    # Using my function -----------------------------------------------------------------------------------------------
+    wavelength_g = 4770.                     # Effective wavelength in Angstroms for the SDSS u band
+    flux_u = flux(mag_ab_g, wavelength_g)
+    print flux_u[1:10]
+
+    # Plots -----------------------------------------------------------------------------------------------------------
     ## Plot01
     plt.plot(mag_abs_r, mag_ab_g - mag_ab_r, 'o', markersize=15, alpha=0.5, color='#FF0066')
     plt.title('Diagrama cor-magnitude', fontsize=15)
@@ -51,7 +64,7 @@ if __name__ == '__main__':
     plt.grid(alpha = 0.5)
     plt.show()
     
-    # Or... ------------------------------------------------------------------------------------------------------------
+    # Or... ----------------------------------------------------------------------------------------------------------
     color = mag_ab_g - mag_ab_r
     
     index_red   = np.where(color > 0.75)
@@ -78,9 +91,11 @@ if __name__ == '__main__':
     plt.grid(alpha = 0.5)
     plt.show()
     
+    # Or... ----------------------------------------------------------------------------------------------------------
+    
     ## Plot04
     fig, axes = plt.subplots(nrows=2, ncols=1)
-    fig.tight_layout()
+    fig.tight_layout()           # The above lines are used only to make the plots better adjusted.
     
     plt.subplot(2, 1, 1)
     plot01, = plt.plot(mag_abs_r[index_red], color[index_red], 'o', markersize=15, alpha=0.5, color='#FF0000')
